@@ -21,7 +21,7 @@ export function Sidebar() {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-4 left-4 z-50 lg:hidden"
+        className="fixed top-4 left-4 z-50 lg:hidden bg-background/80 backdrop-blur-sm"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
         {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -33,12 +33,12 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          "w-64 border-r bg-background h-screen sticky top-0 flex flex-col z-40 transition-transform duration-300",
-          "fixed lg:static",
+          "w-64 border-r bg-background h-screen flex flex-col transition-transform duration-300 ease-in-out",
+          "fixed lg:sticky top-0 z-40",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
-        <div className="p-6">
+        <div className="p-6 pt-16 lg:pt-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-xl">D</span>

@@ -16,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 export default function ResumeBuilder() {
   const [resumeData, setResumeData] = useState<ResumeData>(getDefaultResumeData())
-  const [zoom, setZoom] = useState(1)
+  const [zoom, setZoom] = useState(0.4)
   const [isExporting, setIsExporting] = useState(false)
   const [newSkill, setNewSkill] = useState("")
 
@@ -189,10 +189,10 @@ export default function ResumeBuilder() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="border-b bg-background sticky top-0 z-30">
-        <div className="container mx-auto px-4 lg:px-6 py-3 lg:py-4 flex items-center justify-between gap-2">
-          <h1 className="text-xl lg:text-2xl font-bold ml-12 lg:ml-0">Resume Builder</h1>
+    <div className="min-h-screen bg-muted/30 w-full">
+      <header className="border-b bg-background sticky top-0 z-30 w-full">
+        <div className="w-full max-w-7xl mx-auto px-4 lg:px-6 py-3 lg:py-4 flex items-center justify-between gap-2">
+          <h1 className="text-xl lg:text-2xl font-bold pl-12 lg:pl-0">Resume Builder</h1>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={handleReset} className="hidden sm:flex bg-transparent">
               <RotateCcw className="w-4 h-4 sm:mr-2" />
@@ -209,27 +209,27 @@ export default function ResumeBuilder() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 lg:px-6 py-4 lg:py-8">
-        <div className="grid lg:grid-cols-2 gap-4 lg:gap-8">
-          <div className="space-y-4 lg:space-y-6">
+      <div className="w-full max-w-7xl mx-auto px-4 lg:px-6 py-4 lg:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+          <div className="space-y-4 lg:space-y-6 w-full">
             <Tabs defaultValue="personal" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-1">
-                <TabsTrigger value="personal" className="text-xs sm:text-sm">
+              <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-1 h-auto p-1">
+                <TabsTrigger value="personal" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
                   Personal
                 </TabsTrigger>
-                <TabsTrigger value="summary" className="text-xs sm:text-sm">
+                <TabsTrigger value="summary" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
                   Summary
                 </TabsTrigger>
-                <TabsTrigger value="experience" className="text-xs sm:text-sm">
+                <TabsTrigger value="experience" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
                   Experience
                 </TabsTrigger>
-                <TabsTrigger value="education" className="text-xs sm:text-sm">
+                <TabsTrigger value="education" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
                   Education
                 </TabsTrigger>
-                <TabsTrigger value="projects" className="text-xs sm:text-sm">
+                <TabsTrigger value="projects" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
                   Projects
                 </TabsTrigger>
-                <TabsTrigger value="skills" className="text-xs sm:text-sm">
+                <TabsTrigger value="skills" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
                   Skills
                 </TabsTrigger>
               </TabsList>
@@ -766,7 +766,7 @@ export default function ResumeBuilder() {
                 </div>
               </div>
 
-              <div className="border rounded-lg overflow-auto max-h-[calc(100vh-12rem)] bg-gray-100 p-4 flex items-start justify-center">
+              <div className="border rounded-lg overflow-auto max-h-[50vh] lg:max-h-[calc(100vh-12rem)] bg-gray-100 p-2 lg:p-4 flex items-start justify-center">
                 <ResumePreview data={resumeData} zoom={zoom} />
               </div>
             </Card>
