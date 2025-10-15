@@ -16,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 export default function ResumeBuilder() {
   const [resumeData, setResumeData] = useState<ResumeData>(getDefaultResumeData())
-  const [zoom, setZoom] = useState(0.4)
+  const [zoom, setZoom] = useState(0.5)
   const [isExporting, setIsExporting] = useState(false)
   const [newSkill, setNewSkill] = useState("")
 
@@ -754,7 +754,7 @@ export default function ResumeBuilder() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base lg:text-lg font-semibold">Preview</h2>
                 <div className="flex items-center gap-1 lg:gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}>
+                  <Button variant="outline" size="sm" onClick={() => setZoom(Math.max(0.3, zoom - 0.1))}>
                     <ZoomOut className="w-4 h-4" />
                   </Button>
                   <span className="text-xs lg:text-sm text-muted-foreground min-w-[2.5rem] lg:min-w-[3rem] text-center">

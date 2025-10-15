@@ -128,10 +128,19 @@
 }
 
 /* Professional Resume Builder Theme */
+.resume-preview-wrapper {
+  display: inline-block;
+  margin: 0 auto;
+}
+
 .resume-preview {
   background: white;
   color: #1a1a1a;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  box-sizing: border-box;
 }
 
 .resume-preview h1 {
@@ -174,9 +183,11 @@
     /* A4 dimensions: 210mm x 297mm */
     width: 210mm;
     min-height: 297mm;
+    padding: 20mm;
     /* Content flows continuously, height grows as needed */
     height: auto;
     display: block;
+    box-sizing: border-box;
   }
 }
 

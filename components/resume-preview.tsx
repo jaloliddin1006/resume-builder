@@ -30,22 +30,20 @@ export function ResumePreview({ data, zoom }: ResumePreviewProps) {
 
   return (
     <div
-      id="resume-preview"
-      className="resume-preview bg-white"
+      className="resume-preview-wrapper"
       style={{ 
-        width: '210mm',
-        minHeight: '297mm',
-        padding: '20mm',
         transform: `scale(${zoom})`, 
         transformOrigin: "top center",
-        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-        marginBottom: zoom < 1 ? `${(1 - zoom) * 297}mm` : '0'
       }}
     >
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold mb-2">{personalInfo.fullName || "Your Name"}</h1>
-        <h2 className="text-xl text-gray-600 mb-4">{personalInfo.jobTitle || "Job Title"}</h2>
+      <div
+        id="resume-preview"
+        className="resume-preview bg-white"
+      >
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-4xl font-bold mb-2">{personalInfo.fullName || "Your Name"}</h1>
+          <h2 className="text-xl text-gray-600 mb-4">{personalInfo.jobTitle || "Job Title"}</h2>
 
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600">
           {personalInfo.email && (
@@ -213,6 +211,7 @@ export function ResumePreview({ data, zoom }: ResumePreviewProps) {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }
