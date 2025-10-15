@@ -238,6 +238,64 @@ export default function ResumeBuilder() {
                 <Card className="p-4 lg:p-6">
                   <h2 className="text-lg lg:text-xl font-semibold mb-4">Personal Information</h2>
                   <div className="space-y-4">
+                    {/* Photo Upload */}
+                    <div>
+                      <Label htmlFor="photo">Photo</Label>
+                      <div className="flex items-center gap-4">
+                        {resumeData.personalInfo.photo && (
+                          <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-200">
+                            <img
+                              src={resumeData.personalInfo.photo}
+                              alt="Profile"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <Input
+                            id="photo"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) {
+                                const reader = new FileReader()
+                                reader.onloadend = () => {
+                                  setResumeData({
+                                    ...resumeData,
+                                    personalInfo: {
+                                      ...resumeData.personalInfo,
+                                      photo: reader.result as string,
+                                    },
+                                  })
+                                }
+                                reader.readAsDataURL(file)
+                              }
+                            }}
+                            className="cursor-pointer"
+                          />
+                          {resumeData.personalInfo.photo && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                setResumeData({
+                                  ...resumeData,
+                                  personalInfo: {
+                                    ...resumeData.personalInfo,
+                                    photo: "",
+                                  },
+                                })
+                              }
+                              className="mt-2"
+                            >
+                              Remove Photo
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="fullName">Full Name</Label>
@@ -384,6 +442,97 @@ export default function ResumeBuilder() {
                         }
                         placeholder="johndoe.com"
                       />
+                    </div>
+
+                    {/* Custom Fields */}
+                    <div className="border-t pt-4 mt-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <Label className="text-base">Additional Information</Label>
+                        <Button
+                          onClick={() => {
+                            const newField = {
+                              id: Date.now().toString(),
+                              label: "",
+                              value: "",
+                            }
+                            setResumeData({
+                              ...resumeData,
+                              personalInfo: {
+                                ...resumeData.personalInfo,
+                                customFields: [...resumeData.personalInfo.customFields, newField],
+                              },
+                            })
+                          }}
+                          size="sm"
+                          variant="outline"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Other
+                        </Button>
+                      </div>
+
+                      {resumeData.personalInfo.customFields.map((field) => (
+                        <div key={field.id} className="grid sm:grid-cols-2 gap-4 mb-3 items-end">
+                          <div>
+                            <Label htmlFor={`label-${field.id}`}>Label</Label>
+                            <Input
+                              id={`label-${field.id}`}
+                              value={field.label}
+                              onChange={(e) =>
+                                setResumeData({
+                                  ...resumeData,
+                                  personalInfo: {
+                                    ...resumeData.personalInfo,
+                                    customFields: resumeData.personalInfo.customFields.map((f) =>
+                                      f.id === field.id ? { ...f, label: e.target.value } : f
+                                    ),
+                                  },
+                                })
+                              }
+                              placeholder="e.g., Website, Telegram"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <div className="flex-1">
+                              <Label htmlFor={`value-${field.id}`}>Value</Label>
+                              <Input
+                                id={`value-${field.id}`}
+                                value={field.value}
+                                onChange={(e) =>
+                                  setResumeData({
+                                    ...resumeData,
+                                    personalInfo: {
+                                      ...resumeData.personalInfo,
+                                      customFields: resumeData.personalInfo.customFields.map((f) =>
+                                        f.id === field.id ? { ...f, value: e.target.value } : f
+                                      ),
+                                    },
+                                  })
+                                }
+                                placeholder="Enter value"
+                              />
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setResumeData({
+                                  ...resumeData,
+                                  personalInfo: {
+                                    ...resumeData.personalInfo,
+                                    customFields: resumeData.personalInfo.customFields.filter(
+                                      (f) => f.id !== field.id
+                                    ),
+                                  },
+                                })
+                              }
+                              className="mt-6"
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </Card>

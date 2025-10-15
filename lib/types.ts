@@ -8,6 +8,8 @@ export interface ResumeData {
     github: string
     portfolio: string
     jobTitle: string
+    photo: string
+    customFields: CustomField[]
   }
   summary: string
   experiences: Experience[]
@@ -15,6 +17,12 @@ export interface ResumeData {
   projects: Project[]
   skills: string[]
   languages: Language[]
+}
+
+export interface CustomField {
+  id: string
+  label: string
+  value: string
 }
 
 export interface Experience {

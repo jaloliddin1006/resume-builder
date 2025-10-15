@@ -19,6 +19,11 @@ export function loadResumeData(): ResumeData | null {
       return {
         ...defaultData,
         ...parsedData,
+        personalInfo: {
+          ...defaultData.personalInfo,
+          ...parsedData.personalInfo,
+          customFields: parsedData.personalInfo?.customFields || [],
+        },
         // Ensure all arrays exist with fallback to empty arrays
         experiences: parsedData.experiences || [],
         education: parsedData.education || [],
@@ -45,6 +50,8 @@ export function getDefaultResumeData(): ResumeData {
       github: "",
       portfolio: "",
       jobTitle: "",
+      photo: "",
+      customFields: [],
     },
     summary: "",
     experiences: [],

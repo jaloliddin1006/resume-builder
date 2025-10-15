@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 
 const projects = [
   { name: "Resume builder", href: "/resume", icon: FileText },
-  { name: "Beautiful code", href: "/code-to-image", icon: Sparkles },
+  // { name: "Beautiful code", href: "/code-to-image", icon: Sparkles },
 ]
 
 export function Sidebar() {
