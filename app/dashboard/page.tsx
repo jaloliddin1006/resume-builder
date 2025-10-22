@@ -4,11 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 export default function DashboardPage() {
   return (
-    <div className="flex-1 overflow-auto">
-      <div className="p-6 md:p-8">
+    <div className="min-h-screen bg-muted/30 w-full">
+      <header className="border-b bg-background sticky top-0 z-30 w-full">
+        <div className="w-full max-w-7xl mx-auto px-4 lg:px-6 py-3 lg:py-4">
+          <h1 className="text-xl lg:text-2xl font-bold pl-12 lg:pl-0">Dashboard</h1>
+        </div>
+      </header>
+
+      <div className="w-full max-w-7xl mx-auto px-4 lg:px-6 py-4 lg:py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground"> Defonic toolda mavjud loyihalar</p>
+          <p className="text-muted-foreground">Defonic toolda mavjud loyihalar</p>
         </div>
 
         {/* Information Sections */}
@@ -46,7 +51,7 @@ export default function DashboardPage() {
                   <li>Vaqt cheklangan ariza jarayoni</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-semibold mb-2 text-sm">Resume</h4>
                 <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
@@ -95,7 +100,7 @@ export default function DashboardPage() {
                   <li>Yevropa va Britaniya ish bozorlari</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-semibold mb-2 text-sm">CV (Curriculum Vitae)</h4>
                 <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
@@ -108,7 +113,6 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>Ma'lumotnoma (Obektivka) haqida</CardTitle>
@@ -147,7 +151,6 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-
         </div>
       </div>
     </div>

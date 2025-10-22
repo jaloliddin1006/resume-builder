@@ -24,7 +24,7 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <div className="flex min-h-screen w-full overflow-x-hidden">
             <Sidebar />
-            <main className="flex-1 min-w-0">{children}</main>
+            <main className="flex-1 min-w-0 lg:ml-64">{children}</main>
           </div>
         </Suspense>
         <Analytics />
