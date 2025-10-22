@@ -61,3 +61,43 @@ export interface Language {
   name: string
   level: string
 }
+
+export interface ObjectiveData {
+  personalInfo: {
+    fullName: string
+    currentWorkplace: string
+    birthYear: string
+    birthPlace: string
+    nationality: string
+    partyAffiliation: string
+    partyAffiliationNo: boolean
+    educationLevel: string
+    educationCompletion: string
+    specialization: string
+    scientificDegree: string
+    scientificDegreeNo: boolean
+    scientificTitle: string
+    scientificTitleNo: boolean
+    foreignLanguages: string
+    foreignLanguagesNo: boolean
+    stateAwards: string
+    stateAwardsNo: boolean
+    deputyPositions: string
+    deputyPositionsNo: boolean
+    photo: string
+  }
+  workExperience: {
+    id: string
+    startDate: string
+    endDate: string
+    description: string
+  }[]
+  familyMembers: {
+    id: string
+    relationship: string
+    fullName: string
+    birthInfo: string
+    occupation: string
+    location: string
+  }[]
+}
