@@ -125,7 +125,7 @@ Har safar yangilanish kiritganda npm install, npm run build, pm2 reload kabi ama
 ```bash
 cd /var/www/resume-builder
 git pull 
-npm install
+npm install  --force or --legacy-peer-deps
 npm run build
 
 ```
