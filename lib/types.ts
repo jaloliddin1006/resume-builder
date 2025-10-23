@@ -90,6 +90,7 @@ export interface ObjectiveData {
     id: string
     startDate: string
     endDate: string
+    isCurrent: boolean
     description: string
   }[]
   familyMembers: {

@@ -63,17 +63,16 @@ export default function ObjectiveBuilder() {
         ...objectiveData.workExperience,
         {
           id: Date.now().toString(),
-          company: "",
-          position: "",
           startDate: "",
           endDate: "",
+          isCurrent: false,
           description: "",
         },
       ],
     })
   }
 
-  const updateWorkExperience = (id: string, field: string, value: string) => {
+  const updateWorkExperience = (id: string, field: string, value: string | boolean) => {
     setObjectiveData({
       ...objectiveData,
       workExperience: objectiveData.workExperience.map((exp) => (exp.id === id ? { ...exp, [field]: value } : exp)),
@@ -96,8 +95,7 @@ export default function ObjectiveBuilder() {
           id: Date.now().toString(),
           relationship: "",
           fullName: "",
-          birthYear: "",
-          birthPlace: "",
+          birthInfo: "",
           occupation: "",
           location: "",
         },
@@ -490,7 +488,7 @@ export default function ObjectiveBuilder() {
                         <div className="flex gap-2">
                           <textarea
                             id="foreignLanguages"
-                            value={objectiveData.personalInfo.foreignLanguages}
+                            value={objectiveData.personalInfo.foreignLanguages || ""}
                             onChange={(e) =>
                               setObjectiveData({
                                 ...objectiveData,
@@ -531,7 +529,7 @@ export default function ObjectiveBuilder() {
                       <div className="flex gap-2">
                         <textarea
                           id="stateAwards"
-                          value={objectiveData.personalInfo.stateAwards}
+                          value={objectiveData.personalInfo.stateAwards || ""}
                           onChange={(e) =>
                             setObjectiveData({
                               ...objectiveData,
@@ -571,7 +569,7 @@ export default function ObjectiveBuilder() {
                       <div className="flex gap-2">
                         <textarea
                           id="deputyPositions"
-                          value={objectiveData.personalInfo.deputyPositions}
+                          value={objectiveData.personalInfo.deputyPositions || ""}
                           onChange={(e) =>
                             setObjectiveData({
                               ...objectiveData,
@@ -641,11 +639,27 @@ export default function ObjectiveBuilder() {
                           </div>
                           <div>
                             <Label>Tugallash Vaqti</Label>
-                            <Input
-                              value={exp.endDate}
-                              onChange={(e) => updateWorkExperience(exp.id, "endDate", e.target.value)}
-                              placeholder="07/2025"
-                            />
+                            <div className="flex gap-2">
+                              <Input
+                                value={exp.endDate}
+                                onChange={(e) => updateWorkExperience(exp.id, "endDate", e.target.value)}
+                                placeholder="07/2025"
+                                disabled={exp.isCurrent}
+                              />
+                              <label className="flex items-center gap-2 whitespace-nowrap">
+                                <input
+                                  type="checkbox"
+                                  checked={exp.isCurrent}
+                                  onChange={(e) => {
+                                    updateWorkExperience(exp.id, "isCurrent", e.target.checked)
+                                    if (e.target.checked) {
+                                      updateWorkExperience(exp.id, "endDate", "")
+                                    }
+                                  }}
+                                />
+                                <span className="text-sm">Hozircha</span>
+                              </label>
+                            </div>
                           </div>
                         </div>
 

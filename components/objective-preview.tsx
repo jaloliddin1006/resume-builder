@@ -22,84 +22,21 @@ export function ObjectivePreview({ data, zoom }: ObjectivePreviewProps) {
         {/* Page 1 */}
         <div className="mb-12 pb-8 border-b-2 min-h-[297mm]">
           {/* Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-lg font-bold">MA'LUMOTNOMA</h1>
+          <div className="text-center mb-8">
+            <h1 className="text-lg font-bold mb-2">MA'LUMOTNOMA</h1>
+            <h2 className="text-base font-semibold">{personalInfo.fullName}</h2>
           </div>
 
-          {/* Personal Info and Photo */}
-          <div className="flex gap-6 mb-6">
+          {/* Current Workplace and Photo */}
+          <div className="flex gap-8 mb-8">
             <div className="flex-1">
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div>
-                  <p className="font-semibold">Tug'ilgan yili:</p>
-                  <p>{personalInfo.birthYear}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Tug'ilgan joyi:</p>
-                  <p>{personalInfo.birthPlace}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Millati:</p>
-                  <p>{personalInfo.nationality}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Partiyaviyligi:</p>
-                  <p>{personalInfo.partyAffiliation}</p>
-                </div>
-              </div>
-
-              {/* Education Info */}
-              {personalInfo.educationLevel && (
-                <div className="mt-4">
-                  <p className="font-semibold text-xs mb-2">Ta'lim:</p>
-                  <p className="text-xs">
-                    {personalInfo.educationLevel} - {personalInfo.educationCompletion}
-                  </p>
-                  {personalInfo.specialization && (
-                    <p className="text-xs">Mutaxassisligi: {personalInfo.specialization}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Scientific Info */}
-              {(personalInfo.scientificDegree || personalInfo.scientificTitle) && (
-                <div className="mt-4">
-                  <p className="font-semibold text-xs mb-2">Ilmiy Darajasi va Unvoni:</p>
-                  {personalInfo.scientificDegree && (
-                    <p className="text-xs">Darajasi: {personalInfo.scientificDegree}</p>
-                  )}
-                  {personalInfo.scientificTitle && <p className="text-xs">Unvoni: {personalInfo.scientificTitle}</p>}
-                </div>
-              )}
-
-              {/* Foreign Languages */}
-              {personalInfo.foreignLanguages && (
-                <div className="mt-4">
-                  <p className="font-semibold text-xs mb-2">Chet Tillarini Biladi:</p>
-                  <p className="text-xs">{personalInfo.foreignLanguages}</p>
-                </div>
-              )}
-
-              {/* State Awards */}
-              {personalInfo.stateAwards && (
-                <div className="mt-4">
-                  <p className="font-semibold text-xs mb-2">Davlat Mukofofi:</p>
-                  <p className="text-xs">{personalInfo.stateAwards}</p>
-                </div>
-              )}
-
-              {/* Deputy Positions */}
-              {personalInfo.deputyPositions && (
-                <div className="mt-4">
-                  <p className="font-semibold text-xs mb-2">Saylanadigan Organlar A'zoligi:</p>
-                  <p className="text-xs">{personalInfo.deputyPositions}</p>
-                </div>
+              {personalInfo.currentWorkplace && (
+                <p className="text-sm font-semibold mb-4">{personalInfo.currentWorkplace}</p>
               )}
             </div>
-
-            {/* Photo */}
+            {/* Photo on right */}
             {personalInfo.photo && (
-              <div className="w-24 h-32 border-2 border-gray-400 flex-shrink-0">
+              <div className="w-28 h-36 border-2 border-gray-800 flex-shrink-0">
                 <img
                   src={personalInfo.photo || "/placeholder.svg"}
                   alt="Profile"
@@ -109,28 +46,100 @@ export function ObjectivePreview({ data, zoom }: ObjectivePreviewProps) {
             )}
           </div>
 
+          {/* Birth Year and Place at top */}
+          <div className="grid grid-cols-2 gap-8 mb-6 text-xs">
+            <div>
+              <p className="font-semibold">Tug'ilgan yili:</p>
+              <p>({personalInfo.birthYear})</p>
+            </div>
+            <div>
+              <p className="font-semibold">Tug'ilgan joyi:</p>
+              <p>({personalInfo.birthPlace})</p>
+            </div>
+          </div>
+
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-2 gap-8 text-xs">
+            {/* Left Column */}
+            <div className="space-y-3">
+              <div>
+                <p className="font-semibold">Millati:</p>
+                <p>({personalInfo.nationality})</p>
+              </div>
+
+              <div>
+                <p className="font-semibold">Ma'lumoti:</p>
+                <p>({personalInfo.educationLevel})</p>
+              </div>
+
+              {personalInfo.specialization && (
+                <div>
+                  <p className="font-semibold">Ma'lumoti bo'yicha mutaxasisligi:</p>
+                  <p>({personalInfo.specialization})</p>
+                </div>
+              )}
+
+              <div>
+                <p className="font-semibold">Ilmiy darajasi:</p>
+                <p>({personalInfo.scientificDegree})</p>
+              </div>
+
+              <div>
+                <p className="font-semibold">Qaysi chet tillarini biladi:</p>
+                <p>({personalInfo.foreignLanguages})</p>
+              </div>
+
+              <div>
+                <p className="font-semibold">Davlat mukofoti bilan taqdirlanganmi:</p>
+                <p>({personalInfo.stateAwards})</p>
+              </div>
+
+              <div>
+                <p className="font-semibold">
+                  Xalq deputatlari respublika, viloyat, shahar va tuman Kengashi deputatimi yoki boshqa saylanadigan
+                  organlarning a'zosimi:
+                </p>
+                <p>({personalInfo.deputyPositions})</p>
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-3">
+              <div>
+                <p className="font-semibold">Partiyaviyligi:</p>
+                <p>({personalInfo.partyAffiliation})</p>
+              </div>
+
+              <div>
+                <p className="font-semibold">Tamomlagan:</p>
+                <p>({personalInfo.educationCompletion})</p>
+              </div>
+
+              <div>
+                <p className="font-semibold">Ilmiy unvoni:</p>
+                <p>({personalInfo.scientificTitle})</p>
+              </div>
+            </div>
+          </div>
+
           {/* Work Experience */}
           {workExperience.length > 0 && (
-            <div className="mt-6">
-              <h2 className="text-center font-bold text-xs mb-3">MEHNAT FAOLIYATI</h2>
+            <div className="mt-8 pt-6 border-t border-gray-400">
+              <h2 className="text-center font-bold text-xs mb-4">MEHNAT FAOLIYATI</h2>
               <div className="space-y-2">
                 {workExperience.map((exp) => (
                   <div key={exp.id} className="text-xs">
-                    <p className="font-semibold">
-                      {exp.startDate}-{exp.endDate} yy. - {exp.description}
-                    </p>
+                    <div className="flex gap-4">
+                      <div className="font-semibold whitespace-nowrap">
+                        {exp.startDate}-{exp.isCurrent ? "х.х.в." : exp.endDate} йил.
+                      </div>
+                      <div className="flex-1">- {exp.description}</div>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
-
-          <div className="mt-8 pt-4 border-t">
-            <p className="text-xs font-semibold">{personalInfo.fullName}</p>
-            {personalInfo.currentWorkplace && (
-              <p className="text-xs text-gray-700 mt-1">{personalInfo.currentWorkplace}</p>
-            )}
-          </div>
         </div>
 
         {/* Page 2 - Family Members Table */}
