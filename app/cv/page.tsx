@@ -1,145 +1,207 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { CVPreview } from "@/components/cv-preview"
-import { saveCVData, loadCVData, getDefaultCVData, clearCVData } from "@/lib/cv-storage"
-import type { ObjectiveData } from "@/lib/types"
-import { Trash2, Plus, X } from "lucide-react"
+import { Trash2, Plus, X, ChevronDown, ChevronUp } from "lucide-react"
+
+interface CVFormData {
+  personal_information: {
+    full_name: string
+    email: string
+    phone: string
+    linkedin: string
+    github: string
+    address: string
+    photo_url: string
+  }
+  summary: string
+  education: Array<{
+    id: string
+    degree: string
+    institution: string
+    field: string
+    start_date: string
+    end_date: string
+    honors: string
+  }>
+  experience: Array<{
+    id: string
+    position: string
+    company: string
+    location: string
+    start_date: string
+    end_date: string
+    responsibilities: string[]
+    achievements: string[]
+  }>
+  skills: {
+    technical: string[]
+    soft: string[]
+    languages: Array<{
+      name: string
+      level: string
+    }>
+  }
+  certifications: Array<{
+    id: string
+    title: string
+    organization: string
+    date: string
+    description: string
+  }>
+  projects: Array<{
+    id: string
+    title: string
+    description: string
+    technologies: string[]
+    link: string
+    role: string
+    outcomes: string[]
+  }>
+  publications: Array<{
+    id: string
+    title: string
+    date: string
+    journal: string
+    description: string
+  }>
+  awards: string[]
+  volunteer_experience: Array<{
+    id: string
+    organization: string
+    role: string
+    date: string
+    description: string
+  }>
+  references: Array<{
+    id: string
+    name: string
+    position: string
+    company: string
+    email: string
+    phone: string
+  }>
+  additional_info: {
+    courses: string[]
+    hobbies: string[]
+    memberships: string[]
+  }
+}
+
+const getDefaultCVData = (): CVFormData => ({
+  personal_information: {
+    full_name: "",
+    email: "",
+    phone: "",
+    linkedin: "",
+    github: "",
+    address: "",
+    photo_url: "",
+  },
+  summary: "",
+  education: [],
+  experience: [],
+  skills: {
+    technical: [],
+    soft: [],
+    languages: [],
+  },
+  certifications: [],
+  projects: [],
+  publications: [],
+  awards: [],
+  volunteer_experience: [],
+  references: [],
+  additional_info: {
+    courses: [],
+    hobbies: [],
+    memberships: [],
+  },
+})
 
 export default function CVPage() {
-  const [cvData, setCVData] = useState<ObjectiveData>(getDefaultCVData())
-  const [zoom, setZoom] = useState(1)
-  const [expandedSections, setExpandedSections] = useState({
-    personal: true,
-    work: false,
-    family: false,
-  })
+  const [cvData, setCVData] = useState<CVFormData>(getDefaultCVData())
+  const [expandedSection, setExpandedSection] = useState<string | null>("personal")
 
   useEffect(() => {
-    const savedData = loadCVData()
-    if (savedData) {
-      setCVData(savedData)
+    const saved = localStorage.getItem("cvFormData")
+    if (saved) {
+      setCVData(JSON.parse(saved))
     }
   }, [])
 
   useEffect(() => {
-    saveCVData(cvData)
+    localStorage.setItem("cvFormData", JSON.stringify(cvData))
   }, [cvData])
+
+  const updateCVData = useCallback((updater: (data: CVFormData) => CVFormData) => {
+    setCVData((prev) => updater(prev))
+  }, [])
+
+  const toggleSection = (section: string) => {
+    setExpandedSection(expandedSection === section ? null : section)
+  }
 
   const handleReset = () => {
     if (confirm("Barcha ma'lumotlarni o'chirmoqchimisiz?")) {
-      clearCVData()
       setCVData(getDefaultCVData())
+      localStorage.removeItem("cvFormData")
     }
   }
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = (event) => {
-        setCVData({
-          ...cvData,
-          personalInfo: {
-            ...cvData.personalInfo,
-            photo: event.target?.result as string,
+        updateCVData((data) => ({
+          ...data,
+          personal_information: {
+            ...data.personal_information,
+            photo_url: event.target?.result as string,
           },
-        })
+        }))
       }
       reader.readAsDataURL(file)
     }
   }
 
-  const handlePersonalInfoChange = (field: keyof ObjectiveData["personalInfo"], value: string | boolean) => {
-    setCVData({
-      ...cvData,
-      personalInfo: {
-        ...cvData.personalInfo,
-        [field]: value,
-      },
-    })
-  }
-
-  const handleAddWorkExperience = () => {
-    setCVData({
-      ...cvData,
-      workExperience: [
-        ...cvData.workExperience,
-        {
-          id: Date.now().toString(),
-          startDate: "",
-          endDate: "",
-          isCurrent: false,
-          description: "",
-        },
-      ],
-    })
-  }
-
-  const handleUpdateWorkExperience = (id: string, field: string, value: string | boolean) => {
-    setCVData({
-      ...cvData,
-      workExperience: cvData.workExperience.map((exp) => (exp.id === id ? { ...exp, [field]: value } : exp)),
-    })
-  }
-
-  const handleRemoveWorkExperience = (id: string) => {
-    setCVData({
-      ...cvData,
-      workExperience: cvData.workExperience.filter((exp) => exp.id !== id),
-    })
-  }
-
-  const handleAddFamilyMember = () => {
-    setCVData({
-      ...cvData,
-      familyMembers: [
-        ...cvData.familyMembers,
-        {
-          id: Date.now().toString(),
-          relationship: "",
-          fullName: "",
-          birthInfo: "",
-          occupation: "",
-          location: "",
-        },
-      ],
-    })
-  }
-
-  const handleUpdateFamilyMember = (id: string, field: string, value: string) => {
-    setCVData({
-      ...cvData,
-      familyMembers: cvData.familyMembers.map((member) => (member.id === id ? { ...member, [field]: value } : member)),
-    })
-  }
-
-  const handleRemoveFamilyMember = (id: string) => {
-    setCVData({
-      ...cvData,
-      familyMembers: cvData.familyMembers.filter((member) => member.id !== id),
-    })
-  }
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }))
-  }
+  const SectionCard = ({
+    title,
+    section,
+    count,
+    children,
+  }: {
+    title: string
+    section: string
+    count?: number
+    children: React.ReactNode
+  }) => (
+    <Card>
+      <CardHeader
+        className="cursor-pointer hover:bg-accent transition-colors flex flex-row items-center justify-between"
+        onClick={() => toggleSection(section)}
+      >
+        <div className="flex items-center gap-2">
+          <CardTitle className="text-base">{title}</CardTitle>
+          {count !== undefined && <span className="text-xs bg-muted px-2 py-1 rounded">{count}</span>}
+        </div>
+        {expandedSection === section ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </CardHeader>
+      {expandedSection === section && <CardContent className="space-y-4">{children}</CardContent>}
+    </Card>
+  )
 
   return (
-    <div className="flex-1 overflow-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 md:p-8">
-        {/* Form Section */}
-        <div className="lg:col-span-1 space-y-4">
-          <div className="flex justify-between items-center">
+    <div className="flex h-screen overflow-hidden bg-background">
+      {/* Form Section - Left side with scroll */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-2xl mx-auto p-6 md:p-8 space-y-4">
+          <div className="flex justify-between items-center mb-6 sticky top-0 bg-background z-10 py-2">
             <h1 className="text-2xl font-bold">CV Builder</h1>
             <Button variant="outline" size="sm" onClick={handleReset}>
               <Trash2 className="w-4 h-4 mr-2" />
@@ -147,331 +209,1365 @@ export default function CVPage() {
             </Button>
           </div>
 
-          {/* Personal Information Section */}
-          <Card>
-            <CardHeader className="cursor-pointer hover:bg-accent" onClick={() => toggleSection("personal")}>
-              <CardTitle className="text-lg">Shaxsiy Ma'lumotlar</CardTitle>
-            </CardHeader>
-            {expandedSections.personal && (
-              <CardContent className="space-y-4">
+          {/* Personal Information */}
+          <SectionCard title="Shaxsiy Ma'lumotlar" section="personal">
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">To'liq Ism</label>
+                <Input
+                  value={cvData.personal_information.full_name}
+                  onChange={(e) =>
+                    updateCVData((data) => ({
+                      ...data,
+                      personal_information: { ...data.personal_information, full_name: e.target.value },
+                    }))
+                  }
+                  placeholder="Ismingiz"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-sm font-medium">F.I.O</label>
+                  <label className="text-sm font-medium">Email</label>
                   <Input
-                    value={cvData.personalInfo.fullName}
-                    onChange={(e) => handlePersonalInfoChange("fullName", e.target.value)}
-                    placeholder="To'liq ismingiz"
+                    type="email"
+                    value={cvData.personal_information.email}
+                    onChange={(e) =>
+                      updateCVData((data) => ({
+                        ...data,
+                        personal_information: { ...data.personal_information, email: e.target.value },
+                      }))
+                    }
+                    placeholder="email@example.com"
                   />
                 </div>
-
                 <div>
-                  <label className="text-sm font-medium">Hozirgi Ish Joyi</label>
+                  <label className="text-sm font-medium">Telefon</label>
                   <Input
-                    value={cvData.personalInfo.currentWorkplace}
-                    onChange={(e) => handlePersonalInfoChange("currentWorkplace", e.target.value)}
-                    placeholder="Ish joyi"
+                    value={cvData.personal_information.phone}
+                    onChange={(e) =>
+                      updateCVData((data) => ({
+                        ...data,
+                        personal_information: { ...data.personal_information, phone: e.target.value },
+                      }))
+                    }
+                    placeholder="+998 XX XXX XX XX"
                   />
                 </div>
+              </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="text-sm font-medium">Tug'ilgan Yili</label>
-                    <Input
-                      value={cvData.personalInfo.birthYear}
-                      onChange={(e) => handlePersonalInfoChange("birthYear", e.target.value)}
-                      placeholder="1990"
+              <div>
+                <label className="text-sm font-medium">Manzil</label>
+                <Input
+                  value={cvData.personal_information.address}
+                  onChange={(e) =>
+                    updateCVData((data) => ({
+                      ...data,
+                      personal_information: { ...data.personal_information, address: e.target.value },
+                    }))
+                  }
+                  placeholder="Shahar, Davlat"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-sm font-medium">LinkedIn</label>
+                  <Input
+                    value={cvData.personal_information.linkedin}
+                    onChange={(e) =>
+                      updateCVData((data) => ({
+                        ...data,
+                        personal_information: { ...data.personal_information, linkedin: e.target.value },
+                      }))
+                    }
+                    placeholder="linkedin.com/in/..."
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">GitHub</label>
+                  <Input
+                    value={cvData.personal_information.github}
+                    onChange={(e) =>
+                      updateCVData((data) => ({
+                        ...data,
+                        personal_information: { ...data.personal_information, github: e.target.value },
+                      }))
+                    }
+                    placeholder="github.com/..."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Rasm</label>
+                <Input type="file" accept="image/*" onChange={handlePhotoUpload} />
+                {cvData.personal_information.photo_url && (
+                  <div className="mt-2 w-20 h-20 rounded-lg overflow-hidden border">
+                    <img
+                      src={cvData.personal_information.photo_url || "/placeholder.svg"}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
                     />
                   </div>
+                )}
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* Professional Summary */}
+          <SectionCard title="Professional Xulosa" section="summary">
+            <Textarea
+              value={cvData.summary}
+              onChange={(e) => updateCVData((data) => ({ ...data, summary: e.target.value }))}
+              placeholder="3-5 ta jumla bilan o'zingizni tavsiflab bering..."
+              rows={4}
+            />
+          </SectionCard>
+
+          {/* Education */}
+          <SectionCard title="Ta'lim" section="education" count={cvData.education.length}>
+            <div className="space-y-4">
+              {cvData.education.map((edu, index) => (
+                <div key={edu.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-sm">Ta'lim #{index + 1}</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        updateCVData((data) => ({
+                          ...data,
+                          education: data.education.filter((e) => e.id !== edu.id),
+                        }))
+                      }
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+
                   <div>
-                    <label className="text-sm font-medium">Tug'ilgan Joyi</label>
+                    <label className="text-xs font-medium">Universitet/Maktab</label>
                     <Input
-                      value={cvData.personalInfo.birthPlace}
-                      onChange={(e) => handlePersonalInfoChange("birthPlace", e.target.value)}
-                      placeholder="Shahar"
+                      value={edu.institution}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          education: data.education.map((e) =>
+                            e.id === edu.id ? { ...e, institution: e.target.value } : e,
+                          ),
+                        }))
+                      }
+                      placeholder="Universitet nomi"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Daraja</label>
+                      <Input
+                        value={edu.degree}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            education: data.education.map((e) =>
+                              e.id === edu.id ? { ...e, degree: e.target.value } : e,
+                            ),
+                          }))
+                        }
+                        placeholder="Bachelor, Master..."
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Soha</label>
+                      <Input
+                        value={edu.field}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            education: data.education.map((e) =>
+                              e.id === edu.id ? { ...e, field: e.target.value } : e,
+                            ),
+                          }))
+                        }
+                        placeholder="Informatika..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Boshlanish Sanasi</label>
+                      <Input
+                        type="date"
+                        value={edu.start_date}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            education: data.education.map((e) =>
+                              e.id === edu.id ? { ...e, start_date: e.target.value } : e,
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Tugash Sanasi</label>
+                      <Input
+                        type="date"
+                        value={edu.end_date}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            education: data.education.map((e) =>
+                              e.id === edu.id ? { ...e, end_date: e.target.value } : e,
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Mukofotlar/Faxrilar</label>
+                    <Input
+                      value={edu.honors}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          education: data.education.map((e) =>
+                            e.id === edu.id ? { ...e, honors: e.target.value } : e,
+                          ),
+                        }))
+                      }
+                      placeholder="Mukofotlar"
                     />
                   </div>
                 </div>
+              ))}
 
-                <div>
-                  <label className="text-sm font-medium">Millati</label>
-                  <Input
-                    value={cvData.personalInfo.nationality}
-                    onChange={(e) => handlePersonalInfoChange("nationality", e.target.value)}
-                    placeholder="O'zbek"
-                  />
-                </div>
+              <Button
+                onClick={() =>
+                  updateCVData((data) => ({
+                    ...data,
+                    education: [
+                      ...data.education,
+                      {
+                        id: Date.now().toString(),
+                        degree: "",
+                        institution: "",
+                        field: "",
+                        start_date: "",
+                        end_date: "",
+                        honors: "",
+                      },
+                    ],
+                  }))
+                }
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Ta'lim qo'shish
+              </Button>
+            </div>
+          </SectionCard>
 
-                <div>
-                  <label className="text-sm font-medium">Partiyaviyiligi</label>
-                  <Input
-                    value={cvData.personalInfo.partyAffiliation}
-                    onChange={(e) => handlePersonalInfoChange("partyAffiliation", e.target.value)}
-                    placeholder="Partiya"
-                  />
-                </div>
-
-                <div className="border-t pt-4">
-                  <h3 className="font-semibold text-sm mb-3">Ta'lim Ma'lumotlari</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium">Ma'lumoti</label>
-                      <Input
-                        value={cvData.personalInfo.educationLevel}
-                        onChange={(e) => handlePersonalInfoChange("educationLevel", e.target.value)}
-                        placeholder="Oliy"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">Tamomlagan</label>
-                      <Input
-                        value={cvData.personalInfo.educationCompletion}
-                        onChange={(e) => handlePersonalInfoChange("educationCompletion", e.target.value)}
-                        placeholder="Universitet nomi"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">Mutaxassisligi</label>
-                      <Input
-                        value={cvData.personalInfo.specialization}
-                        onChange={(e) => handlePersonalInfoChange("specialization", e.target.value)}
-                        placeholder="Mutaxassislik"
-                      />
-                    </div>
+          {/* Work Experience */}
+          <SectionCard title="Ish Tajribasi" section="experience" count={cvData.experience.length}>
+            <div className="space-y-4">
+              {cvData.experience.map((exp, index) => (
+                <div key={exp.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-sm">Ish tajribasi #{index + 1}</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        updateCVData((data) => ({
+                          ...data,
+                          experience: data.experience.filter((e) => e.id !== exp.id),
+                        }))
+                      }
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
                   </div>
-                </div>
 
-                <div className="border-t pt-4">
-                  <h3 className="font-semibold text-sm mb-3">Ilmiy Darajalar</h3>
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-sm font-medium">Ilmiy Darajasi</label>
+                      <label className="text-xs font-medium">Lavozim</label>
                       <Input
-                        value={cvData.personalInfo.scientificDegree}
-                        onChange={(e) => handlePersonalInfoChange("scientificDegree", e.target.value)}
-                        placeholder="Doktor"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">Ilmiy Unvoni</label>
-                      <Input
-                        value={cvData.personalInfo.scientificTitle}
-                        onChange={(e) => handlePersonalInfoChange("scientificTitle", e.target.value)}
-                        placeholder="Professor"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h3 className="font-semibold text-sm mb-3">Qo'shimcha Ma'lumotlar</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium">Chet Tillarini Bilish</label>
-                      <Input
-                        value={cvData.personalInfo.foreignLanguages}
-                        onChange={(e) => handlePersonalInfoChange("foreignLanguages", e.target.value)}
-                        placeholder="Ingliz, Rus"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">Davlat Mukofotlari</label>
-                      <Textarea
-                        value={cvData.personalInfo.stateAwards}
-                        onChange={(e) => handlePersonalInfoChange("stateAwards", e.target.value)}
-                        placeholder="Mukofotlar"
-                        rows={2}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">Deputat Lavozimi</label>
-                      <Input
-                        value={cvData.personalInfo.deputyPositions}
-                        onChange={(e) => handlePersonalInfoChange("deputyPositions", e.target.value)}
+                        value={exp.position}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            experience: data.experience.map((e) =>
+                              e.id === exp.id ? { ...e, position: e.target.value } : e,
+                            ),
+                          }))
+                        }
                         placeholder="Lavozim"
                       />
                     </div>
-
                     <div>
-                      <label className="text-sm font-medium">Rasm</label>
-                      <Input type="file" accept="image/*" onChange={handlePhotoUpload} />
+                      <label className="text-xs font-medium">Kompaniya</label>
+                      <Input
+                        value={exp.company}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            experience: data.experience.map((e) =>
+                              e.id === exp.id ? { ...e, company: e.target.value } : e,
+                            ),
+                          }))
+                        }
+                        placeholder="Kompaniya nomi"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Joylashgan Joyi</label>
+                    <Input
+                      value={exp.location}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          experience: data.experience.map((e) =>
+                            e.id === exp.id ? { ...e, location: e.target.value } : e,
+                          ),
+                        }))
+                      }
+                      placeholder="Shahar"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Boshlanish Sanasi</label>
+                      <Input
+                        type="date"
+                        value={exp.start_date}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            experience: data.experience.map((e) =>
+                              e.id === exp.id ? { ...e, start_date: e.target.value } : e,
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Tugash Sanasi</label>
+                      <Input
+                        type="date"
+                        value={exp.end_date}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            experience: data.experience.map((e) =>
+                              e.id === exp.id ? { ...e, end_date: e.target.value } : e,
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Mas'uliyatlar</label>
+                    <Textarea
+                      value={exp.responsibilities.join("\n")}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          experience: data.experience.map((e) =>
+                            e.id === exp.id ? { ...e, responsibilities: e.target.value.split("\n") } : e,
+                          ),
+                        }))
+                      }
+                      placeholder="Har bir qatorga bitta mas'uliyat"
+                      rows={2}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Yutuqlar</label>
+                    <Textarea
+                      value={exp.achievements.join("\n")}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          experience: data.experience.map((e) =>
+                            e.id === exp.id ? { ...e, achievements: e.target.value.split("\n") } : e,
+                          ),
+                        }))
+                      }
+                      placeholder="Har bir qatorga bitta yutuq"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                onClick={() =>
+                  updateCVData((data) => ({
+                    ...data,
+                    experience: [
+                      ...data.experience,
+                      {
+                        id: Date.now().toString(),
+                        position: "",
+                        company: "",
+                        location: "",
+                        start_date: "",
+                        end_date: "",
+                        responsibilities: [],
+                        achievements: [],
+                      },
+                    ],
+                  }))
+                }
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Ish tajribasi qo'shish
+              </Button>
+            </div>
+          </SectionCard>
+
+          {/* Skills */}
+          <SectionCard title="Ko'nikmalar" section="skills">
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Texnik Ko'nikmalar</label>
+                <Textarea
+                  value={cvData.skills.technical.join("\n")}
+                  onChange={(e) =>
+                    updateCVData((data) => ({
+                      ...data,
+                      skills: { ...data.skills, technical: e.target.value.split("\n").filter(Boolean) },
+                    }))
+                  }
+                  placeholder="Har bir qatorga bitta ko'nikma (masalan: JavaScript, React, Node.js)"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Yumshoq Ko'nikmalar</label>
+                <Textarea
+                  value={cvData.skills.soft.join("\n")}
+                  onChange={(e) =>
+                    updateCVData((data) => ({
+                      ...data,
+                      skills: { ...data.skills, soft: e.target.value.split("\n").filter(Boolean) },
+                    }))
+                  }
+                  placeholder="Har bir qatorga bitta ko'nikma (masalan: Liderlik, Muloqat)"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Tillar</label>
+                <div className="space-y-2">
+                  {cvData.skills.languages.map((lang, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={lang.name}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            skills: {
+                              ...data.skills,
+                              languages: data.skills.languages.map((l, i) =>
+                                i === index ? { ...l, name: e.target.value } : l,
+                              ),
+                            },
+                          }))
+                        }
+                        placeholder="Til nomi"
+                      />
+                      <Input
+                        value={lang.level}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            skills: {
+                              ...data.skills,
+                              languages: data.skills.languages.map((l, i) =>
+                                i === index ? { ...l, level: e.target.value } : l,
+                              ),
+                            },
+                          }))
+                        }
+                        placeholder="Darajasi (Beginner, Intermediate, Advanced)"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          updateCVData((data) => ({
+                            ...data,
+                            skills: {
+                              ...data.skills,
+                              languages: data.skills.languages.filter((_, i) => i !== index),
+                            },
+                          }))
+                        }
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    onClick={() =>
+                      updateCVData((data) => ({
+                        ...data,
+                        skills: {
+                          ...data.skills,
+                          languages: [...data.skills.languages, { name: "", level: "" }],
+                        },
+                      }))
+                    }
+                    variant="outline"
+                    className="w-full"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Til qo'shish
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* Certifications */}
+          <SectionCard title="Sertifikatlar" section="certifications" count={cvData.certifications.length}>
+            <div className="space-y-4">
+              {cvData.certifications.map((cert, index) => (
+                <div key={cert.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-sm">Sertifikat #{index + 1}</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        updateCVData((data) => ({
+                          ...data,
+                          certifications: data.certifications.filter((c) => c.id !== cert.id),
+                        }))
+                      }
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Sertifikat Nomi</label>
+                    <Input
+                      value={cert.title}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          certifications: data.certifications.map((c) =>
+                            c.id === cert.id ? { ...c, title: e.target.value } : c,
+                          ),
+                        }))
+                      }
+                      placeholder="Sertifikat nomi"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Tashkilot</label>
+                      <Input
+                        value={cert.organization}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            certifications: data.certifications.map((c) =>
+                              c.id === cert.id ? { ...c, organization: e.target.value } : c,
+                            ),
+                          }))
+                        }
+                        placeholder="Tashkilot nomi"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Sana</label>
+                      <Input
+                        type="date"
+                        value={cert.date}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            certifications: data.certifications.map((c) =>
+                              c.id === cert.id ? { ...c, date: e.target.value } : c,
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Tavsifi</label>
+                    <Textarea
+                      value={cert.description}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          certifications: data.certifications.map((c) =>
+                            c.id === cert.id ? { ...c, description: e.target.value } : c,
+                          ),
+                        }))
+                      }
+                      placeholder="Sertifikat tavsifi"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                onClick={() =>
+                  updateCVData((data) => ({
+                    ...data,
+                    certifications: [
+                      ...data.certifications,
+                      {
+                        id: Date.now().toString(),
+                        title: "",
+                        organization: "",
+                        date: "",
+                        description: "",
+                      },
+                    ],
+                  }))
+                }
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Sertifikat qo'shish
+              </Button>
+            </div>
+          </SectionCard>
+
+          {/* Projects */}
+          <SectionCard title="Loyihalar" section="projects" count={cvData.projects.length}>
+            <div className="space-y-4">
+              {cvData.projects.map((project, index) => (
+                <div key={project.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-sm">Loyiha #{index + 1}</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        updateCVData((data) => ({
+                          ...data,
+                          projects: data.projects.filter((p) => p.id !== project.id),
+                        }))
+                      }
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Loyiha Nomi</label>
+                    <Input
+                      value={project.title}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          projects: data.projects.map((p) =>
+                            p.id === project.id ? { ...p, title: e.target.value } : p,
+                          ),
+                        }))
+                      }
+                      placeholder="Loyiha nomi"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Tavsifi</label>
+                    <Textarea
+                      value={project.description}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          projects: data.projects.map((p) =>
+                            p.id === project.id ? { ...p, description: e.target.value } : p,
+                          ),
+                        }))
+                      }
+                      placeholder="Loyiha tavsifi"
+                      rows={2}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Texnologiyalar</label>
+                    <Textarea
+                      value={project.technologies.join("\n")}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          projects: data.projects.map((p) =>
+                            p.id === project.id
+                              ? { ...p, technologies: e.target.value.split("\n").filter(Boolean) }
+                              : p,
+                          ),
+                        }))
+                      }
+                      placeholder="Har bir qatorga bitta texnologiya"
+                      rows={2}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Rol</label>
+                      <Input
+                        value={project.role}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            projects: data.projects.map((p) =>
+                              p.id === project.id ? { ...p, role: e.target.value } : p,
+                            ),
+                          }))
+                        }
+                        placeholder="Rol"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Link</label>
+                      <Input
+                        value={project.link}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            projects: data.projects.map((p) =>
+                              p.id === project.id ? { ...p, link: e.target.value } : p,
+                            ),
+                          }))
+                        }
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Natijalar</label>
+                    <Textarea
+                      value={project.outcomes.join("\n")}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          projects: data.projects.map((p) =>
+                            p.id === project.id ? { ...p, outcomes: e.target.value.split("\n").filter(Boolean) } : p,
+                          ),
+                        }))
+                      }
+                      placeholder="Har bir qatorga bitta natija"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                onClick={() =>
+                  updateCVData((data) => ({
+                    ...data,
+                    projects: [
+                      ...data.projects,
+                      {
+                        id: Date.now().toString(),
+                        title: "",
+                        description: "",
+                        technologies: [],
+                        link: "",
+                        role: "",
+                        outcomes: [],
+                      },
+                    ],
+                  }))
+                }
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Loyiha qo'shish
+              </Button>
+            </div>
+          </SectionCard>
+
+          {/* Publications */}
+          <SectionCard title="Nashrlar" section="publications" count={cvData.publications.length}>
+            <div className="space-y-4">
+              {cvData.publications.map((pub, index) => (
+                <div key={pub.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-sm">Nashr #{index + 1}</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        updateCVData((data) => ({
+                          ...data,
+                          publications: data.publications.filter((p) => p.id !== pub.id),
+                        }))
+                      }
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Nashr Nomi</label>
+                    <Input
+                      value={pub.title}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          publications: data.publications.map((p) =>
+                            p.id === pub.id ? { ...p, title: e.target.value } : p,
+                          ),
+                        }))
+                      }
+                      placeholder="Nashr nomi"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Sana</label>
+                      <Input
+                        type="date"
+                        value={pub.date}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            publications: data.publications.map((p) =>
+                              p.id === pub.id ? { ...p, date: e.target.value } : p,
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Jurnal/Konferensiya</label>
+                      <Input
+                        value={pub.journal}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            publications: data.publications.map((p) =>
+                              p.id === pub.id ? { ...p, journal: e.target.value } : p,
+                            ),
+                          }))
+                        }
+                        placeholder="Jurnal nomi"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Tavsifi</label>
+                    <Textarea
+                      value={pub.description}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          publications: data.publications.map((p) =>
+                            p.id === pub.id ? { ...p, description: e.target.value } : p,
+                          ),
+                        }))
+                      }
+                      placeholder="Nashr tavsifi"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                onClick={() =>
+                  updateCVData((data) => ({
+                    ...data,
+                    publications: [
+                      ...data.publications,
+                      {
+                        id: Date.now().toString(),
+                        title: "",
+                        date: "",
+                        journal: "",
+                        description: "",
+                      },
+                    ],
+                  }))
+                }
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Nashr qo'shish
+              </Button>
+            </div>
+          </SectionCard>
+
+          {/* Awards */}
+          <SectionCard title="Mukofotlar va Yutuqlar" section="awards" count={cvData.awards.length}>
+            <div className="space-y-2">
+              {cvData.awards.map((award, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={award}
+                    onChange={(e) =>
+                      updateCVData((data) => ({
+                        ...data,
+                        awards: data.awards.map((a, i) => (i === index ? e.target.value : a)),
+                      }))
+                    }
+                    placeholder="Mukofot nomi"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      updateCVData((data) => ({
+                        ...data,
+                        awards: data.awards.filter((_, i) => i !== index),
+                      }))
+                    }
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+              <Button
+                onClick={() => updateCVData((data) => ({ ...data, awards: [...data.awards, ""] }))}
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Mukofot qo'shish
+              </Button>
+            </div>
+          </SectionCard>
+
+          {/* Volunteer Experience */}
+          <SectionCard title="Volunteer Tajribasi" section="volunteer" count={cvData.volunteer_experience.length}>
+            <div className="space-y-4">
+              {cvData.volunteer_experience.map((vol, index) => (
+                <div key={vol.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-sm">Volunteer #{index + 1}</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        updateCVData((data) => ({
+                          ...data,
+                          volunteer_experience: data.volunteer_experience.filter((v) => v.id !== vol.id),
+                        }))
+                      }
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Tashkilot</label>
+                      <Input
+                        value={vol.organization}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            volunteer_experience: data.volunteer_experience.map((v) =>
+                              v.id === vol.id ? { ...v, organization: e.target.value } : v,
+                            ),
+                          }))
+                        }
+                        placeholder="Tashkilot nomi"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Rol</label>
+                      <Input
+                        value={vol.role}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            volunteer_experience: data.volunteer_experience.map((v) =>
+                              v.id === vol.id ? { ...v, role: e.target.value } : v,
+                            ),
+                          }))
+                        }
+                        placeholder="Rol"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Sana</label>
+                    <Input
+                      value={vol.date}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          volunteer_experience: data.volunteer_experience.map((v) =>
+                            v.id === vol.id ? { ...v, date: e.target.value } : v,
+                          ),
+                        }))
+                      }
+                      placeholder="Sana"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Tavsifi</label>
+                    <Textarea
+                      value={vol.description}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          volunteer_experience: data.volunteer_experience.map((v) =>
+                            v.id === vol.id ? { ...v, description: e.target.value } : v,
+                          ),
+                        }))
+                      }
+                      placeholder="Volunteer tajribasi tavsifi"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                onClick={() =>
+                  updateCVData((data) => ({
+                    ...data,
+                    volunteer_experience: [
+                      ...data.volunteer_experience,
+                      {
+                        id: Date.now().toString(),
+                        organization: "",
+                        role: "",
+                        date: "",
+                        description: "",
+                      },
+                    ],
+                  }))
+                }
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Volunteer qo'shish
+              </Button>
+            </div>
+          </SectionCard>
+
+          {/* References */}
+          <SectionCard title="Referenslar" section="references" count={cvData.references.length}>
+            <div className="space-y-4">
+              {cvData.references.map((ref, index) => (
+                <div key={ref.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-sm">Referens #{index + 1}</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        updateCVData((data) => ({
+                          ...data,
+                          references: data.references.filter((r) => r.id !== ref.id),
+                        }))
+                      }
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium">Ism</label>
+                    <Input
+                      value={ref.name}
+                      onChange={(e) =>
+                        updateCVData((data) => ({
+                          ...data,
+                          references: data.references.map((r) =>
+                            r.id === ref.id ? { ...r, name: e.target.value } : r,
+                          ),
+                        }))
+                      }
+                      placeholder="Ism"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Lavozim</label>
+                      <Input
+                        value={ref.position}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            references: data.references.map((r) =>
+                              r.id === ref.id ? { ...r, position: e.target.value } : r,
+                            ),
+                          }))
+                        }
+                        placeholder="Lavozim"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Kompaniya</label>
+                      <Input
+                        value={ref.company}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            references: data.references.map((r) =>
+                              r.id === ref.id ? { ...r, company: e.target.value } : r,
+                            ),
+                          }))
+                        }
+                        placeholder="Kompaniya"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium">Email</label>
+                      <Input
+                        type="email"
+                        value={ref.email}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            references: data.references.map((r) =>
+                              r.id === ref.id ? { ...r, email: e.target.value } : r,
+                            ),
+                          }))
+                        }
+                        placeholder="email@example.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium">Telefon</label>
+                      <Input
+                        value={ref.phone}
+                        onChange={(e) =>
+                          updateCVData((data) => ({
+                            ...data,
+                            references: data.references.map((r) =>
+                              r.id === ref.id ? { ...r, phone: e.target.value } : r,
+                            ),
+                          }))
+                        }
+                        placeholder="+998 XX XXX XX XX"
+                      />
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            )}
-          </Card>
+              ))}
 
-          {/* Work Experience Section */}
-          <Card>
-            <CardHeader
-              className="cursor-pointer hover:bg-accent flex flex-row items-center justify-between"
-              onClick={() => toggleSection("work")}
-            >
-              <CardTitle className="text-lg">Ish Tajribasi</CardTitle>
-              <span className="text-xs bg-muted px-2 py-1 rounded">{cvData.workExperience.length}</span>
-            </CardHeader>
-            {expandedSections.work && (
-              <CardContent className="space-y-4">
-                {cvData.workExperience.map((exp, index) => (
-                  <div key={exp.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-medium text-sm">Ish tajribasi #{index + 1}</h4>
-                      <Button variant="ghost" size="sm" onClick={() => handleRemoveWorkExperience(exp.id)}>
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
+              <Button
+                onClick={() =>
+                  updateCVData((data) => ({
+                    ...data,
+                    references: [
+                      ...data.references,
+                      {
+                        id: Date.now().toString(),
+                        name: "",
+                        position: "",
+                        company: "",
+                        email: "",
+                        phone: "",
+                      },
+                    ],
+                  }))
+                }
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Referens qo'shish
+              </Button>
+            </div>
+          </SectionCard>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-xs font-medium">Boshlanish Sanasi</label>
-                        <Input
-                          type="date"
-                          value={exp.startDate}
-                          onChange={(e) => handleUpdateWorkExperience(exp.id, "startDate", e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium">Tugash Sanasi</label>
-                        <Input
-                          type="date"
-                          value={exp.endDate}
-                          onChange={(e) => handleUpdateWorkExperience(exp.id, "endDate", e.target.value)}
-                          disabled={exp.isCurrent}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id={`current-${exp.id}`}
-                        checked={exp.isCurrent}
-                        onChange={(e) => handleUpdateWorkExperience(exp.id, "isCurrent", e.target.checked)}
-                      />
-                      <label htmlFor={`current-${exp.id}`} className="text-xs font-medium">
-                        Hozir ishlayapman
-                      </label>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-medium">Tavsifi</label>
-                      <Textarea
-                        value={exp.description}
-                        onChange={(e) => handleUpdateWorkExperience(exp.id, "description", e.target.value)}
-                        placeholder="Ish tajribasi tavsifi"
-                        rows={2}
-                      />
-                    </div>
-                  </div>
-                ))}
-
-                <Button onClick={handleAddWorkExperience} variant="outline" className="w-full bg-transparent">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Ish tajribasi qo'shish
-                </Button>
-              </CardContent>
-            )}
-          </Card>
-
-          {/* Family Members Section */}
-          <Card>
-            <CardHeader
-              className="cursor-pointer hover:bg-accent flex flex-row items-center justify-between"
-              onClick={() => toggleSection("family")}
-            >
-              <CardTitle className="text-lg">Oila Aʼzolari</CardTitle>
-              <span className="text-xs bg-muted px-2 py-1 rounded">{cvData.familyMembers.length}</span>
-            </CardHeader>
-            {expandedSections.family && (
-              <CardContent className="space-y-4">
-                {cvData.familyMembers.map((member, index) => (
-                  <div key={member.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-medium text-sm">Oila a'zosi #{index + 1}</h4>
-                      <Button variant="ghost" size="sm" onClick={() => handleRemoveFamilyMember(member.id)}>
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-medium">Munosabati</label>
-                      <Input
-                        value={member.relationship}
-                        onChange={(e) => handleUpdateFamilyMember(member.id, "relationship", e.target.value)}
-                        placeholder="Ota, Ona, Aka, Opa..."
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-medium">F.I.O</label>
-                      <Input
-                        value={member.fullName}
-                        onChange={(e) => handleUpdateFamilyMember(member.id, "fullName", e.target.value)}
-                        placeholder="To'liq ismi"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-medium">Tug'ilgan Ma'lumoti</label>
-                      <Input
-                        value={member.birthInfo}
-                        onChange={(e) => handleUpdateFamilyMember(member.id, "birthInfo", e.target.value)}
-                        placeholder="Tug'ilgan yili va joyi"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-medium">Kasbi</label>
-                      <Input
-                        value={member.occupation}
-                        onChange={(e) => handleUpdateFamilyMember(member.id, "occupation", e.target.value)}
-                        placeholder="Kasbi"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-medium">Joylashgan Joyi</label>
-                      <Input
-                        value={member.location}
-                        onChange={(e) => handleUpdateFamilyMember(member.id, "location", e.target.value)}
-                        placeholder="Shahar, Davlat"
-                      />
-                    </div>
-                  </div>
-                ))}
-
-                <Button onClick={handleAddFamilyMember} variant="outline" className="w-full bg-transparent">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Oila a'zosi qo'shish
-                </Button>
-              </CardContent>
-            )}
-          </Card>
-        </div>
-
-        {/* Preview Section */}
-        <div className="lg:col-span-2">
-          <Card className="sticky top-6">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>CV Ko'rinishi</CardTitle>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}>
-                  −
-                </Button>
-                <span className="text-sm w-12 text-center">{Math.round(zoom * 100)}%</span>
-                <Button variant="outline" size="sm" onClick={() => setZoom(Math.min(1.5, zoom + 0.1))}>
-                  +
-                </Button>
+          {/* Additional Info */}
+          <SectionCard title="Qo'shimcha Ma'lumotlar" section="additional">
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Kurslar</label>
+                <Textarea
+                  value={cvData.additional_info.courses.join("\n")}
+                  onChange={(e) =>
+                    updateCVData((data) => ({
+                      ...data,
+                      additional_info: {
+                        ...data.additional_info,
+                        courses: e.target.value.split("\n").filter(Boolean),
+                      },
+                    }))
+                  }
+                  placeholder="Har bir qatorga bitta kurs"
+                  rows={2}
+                />
               </div>
-            </CardHeader>
-            <CardContent className="flex justify-center overflow-auto max-h-[calc(100vh-200px)]">
-              <CVPreview data={cvData} zoom={zoom} />
-            </CardContent>
-          </Card>
+
+              <div>
+                <label className="text-sm font-medium">Hobbiylar/Qiziqishlar</label>
+                <Textarea
+                  value={cvData.additional_info.hobbies.join("\n")}
+                  onChange={(e) =>
+                    updateCVData((data) => ({
+                      ...data,
+                      additional_info: {
+                        ...data.additional_info,
+                        hobbies: e.target.value.split("\n").filter(Boolean),
+                      },
+                    }))
+                  }
+                  placeholder="Har bir qatorga bitta hobby"
+                  rows={2}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Professional Aʼzoliklari</label>
+                <Textarea
+                  value={cvData.additional_info.memberships.join("\n")}
+                  onChange={(e) =>
+                    updateCVData((data) => ({
+                      ...data,
+                      additional_info: {
+                        ...data.additional_info,
+                        memberships: e.target.value.split("\n").filter(Boolean),
+                      },
+                    }))
+                  }
+                  placeholder="Har bir qatorga bitta a'zollik"
+                  rows={2}
+                />
+              </div>
+            </div>
+          </SectionCard>
+
+          <div className="pb-8" />
+        </div>
+      </div>
+
+      <div className="hidden lg:flex lg:w-1/3 border-l bg-gradient-to-br from-slate-50 to-slate-100 overflow-y-auto p-6">
+        <div className="w-full">
+          {/* A4 CV Preview */}
+          <div className="bg-white rounded-xl shadow-2xl overflow-hidden" style={{ aspectRatio: "210/297" }}>
+            <div className="h-full overflow-hidden flex flex-col p-8 text-sm bg-white space-y-3">
+              {/* Header */}
+              <div className="border-b-2 border-blue-600 pb-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+                      {cvData.personal_information.full_name || "Your Name"}
+                    </h1>
+                    <p className="text-gray-600 text-xs mt-1">
+                      {cvData.personal_information.address || "City, Country"}
+                    </p>
+                  </div>
+                  {cvData.personal_information.photo_url && (
+                    <img
+                      src={cvData.personal_information.photo_url || "/placeholder.svg"}
+                      alt="Profile"
+                      className="w-14 h-14 rounded-lg object-cover border-2 border-blue-600"
+                    />
+                  )}
+                </div>
+                <div className="flex gap-3 mt-2 text-xs text-gray-600 flex-wrap">
+                  {cvData.personal_information.email && <span>{cvData.personal_information.email}</span>}
+                  {cvData.personal_information.phone && <span>•</span>}
+                  {cvData.personal_information.phone && <span>{cvData.personal_information.phone}</span>}
+                </div>
+              </div>
+
+              {/* Summary */}
+              {cvData.summary && (
+                <div>
+                  <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1 text-blue-700">
+                    Professional Summary
+                  </h2>
+                  <p className="text-gray-700 text-xs leading-relaxed line-clamp-3">{cvData.summary}</p>
+                </div>
+              )}
+
+              {/* Work Experience */}
+              {cvData.experience.length > 0 && (
+                <div>
+                  <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1 text-blue-700">
+                    Work Experience
+                  </h2>
+                  <div className="space-y-1">
+                    {cvData.experience.slice(0, 2).map((exp) => (
+                      <div key={exp.id} className="text-xs">
+                        <div className="flex justify-between items-start">
+                          <span className="font-semibold text-gray-900">{exp.position}</span>
+                          <span className="text-gray-500 text-xs">{exp.start_date}</span>
+                        </div>
+                        <p className="text-gray-600 text-xs">{exp.company}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Education */}
+              {cvData.education.length > 0 && (
+                <div>
+                  <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1 text-blue-700">
+                    Education
+                  </h2>
+                  <div className="space-y-1">
+                    {cvData.education.slice(0, 2).map((edu) => (
+                      <div key={edu.id} className="text-xs">
+                        <div className="font-semibold text-gray-900">
+                          {edu.degree} {edu.field && `in ${edu.field}`}
+                        </div>
+                        <p className="text-gray-600 text-xs">{edu.institution}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Skills */}
+              {cvData.skills.technical.length > 0 && (
+                <div>
+                  <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1 text-blue-700">
+                    Skills
+                  </h2>
+                  <p className="text-gray-700 text-xs leading-relaxed">
+                    {cvData.skills.technical.slice(0, 6).join(", ")}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
