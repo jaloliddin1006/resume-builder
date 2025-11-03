@@ -353,8 +353,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          education: data.education.map((e) =>
-                            e.id === edu.id ? { ...e, institution: e.target.value } : e,
+                          education: data.education.map((item) =>
+                            item.id === edu.id ? { ...item, institution: e.target.value } : item,
                           ),
                         }))
                       }
@@ -370,8 +370,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            education: data.education.map((e) =>
-                              e.id === edu.id ? { ...e, degree: e.target.value } : e,
+                            education: data.education.map((item) =>
+                              item.id === edu.id ? { ...item, degree: e.target.value } : item,
                             ),
                           }))
                         }
@@ -385,8 +385,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            education: data.education.map((e) =>
-                              e.id === edu.id ? { ...e, field: e.target.value } : e,
+                            education: data.education.map((item) =>
+                              item.id === edu.id ? { ...item, field: e.target.value } : item,
                             ),
                           }))
                         }
@@ -404,8 +404,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            education: data.education.map((e) =>
-                              e.id === edu.id ? { ...e, start_date: e.target.value } : e,
+                            education: data.education.map((item) =>
+                              item.id === edu.id ? { ...item, start_date: e.target.value } : item,
                             ),
                           }))
                         }
@@ -419,8 +419,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            education: data.education.map((e) =>
-                              e.id === edu.id ? { ...e, end_date: e.target.value } : e,
+                            education: data.education.map((item) =>
+                              item.id === edu.id ? { ...item, end_date: e.target.value } : item,
                             ),
                           }))
                         }
@@ -435,8 +435,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          education: data.education.map((e) =>
-                            e.id === edu.id ? { ...e, honors: e.target.value } : e,
+                          education: data.education.map((item) =>
+                            item.id === edu.id ? { ...item, honors: e.target.value } : item,
                           ),
                         }))
                       }
@@ -502,8 +502,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            experience: data.experience.map((e) =>
-                              e.id === exp.id ? { ...e, position: e.target.value } : e,
+                            experience: data.experience.map((item) =>
+                              item.id === exp.id ? { ...item, position: e.target.value } : item,
                             ),
                           }))
                         }
@@ -517,8 +517,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            experience: data.experience.map((e) =>
-                              e.id === exp.id ? { ...e, company: e.target.value } : e,
+                            experience: data.experience.map((item) =>
+                              item.id === exp.id ? { ...item, company: e.target.value } : item,
                             ),
                           }))
                         }
@@ -534,8 +534,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          experience: data.experience.map((e) =>
-                            e.id === exp.id ? { ...e, location: e.target.value } : e,
+                          experience: data.experience.map((item) =>
+                            item.id === exp.id ? { ...item, location: e.target.value } : item,
                           ),
                         }))
                       }
@@ -552,8 +552,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            experience: data.experience.map((e) =>
-                              e.id === exp.id ? { ...e, start_date: e.target.value } : e,
+                            experience: data.experience.map((item) =>
+                              item.id === exp.id ? { ...item, start_date: e.target.value } : item,
                             ),
                           }))
                         }
@@ -567,8 +567,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            experience: data.experience.map((e) =>
-                              e.id === exp.id ? { ...e, end_date: e.target.value } : e,
+                            experience: data.experience.map((item) =>
+                              item.id === exp.id ? { ...item, end_date: e.target.value } : item,
                             ),
                           }))
                         }
@@ -583,8 +583,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          experience: data.experience.map((e) =>
-                            e.id === exp.id ? { ...e, responsibilities: e.target.value.split("\n") } : e,
+                          experience: data.experience.map((item) =>
+                            item.id === exp.id ? { ...item, responsibilities: e.target.value.split("\n") } : item,
                           ),
                         }))
                       }
@@ -600,8 +600,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          experience: data.experience.map((e) =>
-                            e.id === exp.id ? { ...e, achievements: e.target.value.split("\n") } : e,
+                          experience: data.experience.map((item) =>
+                            item.id === exp.id ? { ...item, achievements: e.target.value.split("\n") } : item,
                           ),
                         }))
                       }
@@ -774,8 +774,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          certifications: data.certifications.map((c) =>
-                            c.id === cert.id ? { ...c, title: e.target.value } : c,
+                          certifications: data.certifications.map((item) =>
+                            item.id === cert.id ? { ...item, title: e.target.value } : item,
                           ),
                         }))
                       }
@@ -791,8 +791,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            certifications: data.certifications.map((c) =>
-                              c.id === cert.id ? { ...c, organization: e.target.value } : c,
+                            certifications: data.certifications.map((item) =>
+                              item.id === cert.id ? { ...item, organization: e.target.value } : item,
                             ),
                           }))
                         }
@@ -807,8 +807,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            certifications: data.certifications.map((c) =>
-                              c.id === cert.id ? { ...c, date: e.target.value } : c,
+                            certifications: data.certifications.map((item) =>
+                              item.id === cert.id ? { ...item, date: e.target.value } : item,
                             ),
                           }))
                         }
@@ -823,8 +823,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          certifications: data.certifications.map((c) =>
-                            c.id === cert.id ? { ...c, description: e.target.value } : c,
+                          certifications: data.certifications.map((item) =>
+                            item.id === cert.id ? { ...item, description: e.target.value } : item,
                           ),
                         }))
                       }
@@ -888,8 +888,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          projects: data.projects.map((p) =>
-                            p.id === project.id ? { ...p, title: e.target.value } : p,
+                          projects: data.projects.map((item) =>
+                            item.id === project.id ? { ...item, title: e.target.value } : item,
                           ),
                         }))
                       }
@@ -904,8 +904,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          projects: data.projects.map((p) =>
-                            p.id === project.id ? { ...p, description: e.target.value } : p,
+                          projects: data.projects.map((item) =>
+                            item.id === project.id ? { ...item, description: e.target.value } : item,
                           ),
                         }))
                       }
@@ -921,10 +921,10 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          projects: data.projects.map((p) =>
-                            p.id === project.id
-                              ? { ...p, technologies: e.target.value.split("\n").filter(Boolean) }
-                              : p,
+                          projects: data.projects.map((item) =>
+                            item.id === project.id
+                              ? { ...item, technologies: e.target.value.split("\n").filter(Boolean) }
+                              : item,
                           ),
                         }))
                       }
@@ -941,8 +941,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            projects: data.projects.map((p) =>
-                              p.id === project.id ? { ...p, role: e.target.value } : p,
+                            projects: data.projects.map((item) =>
+                              item.id === project.id ? { ...item, role: e.target.value } : item,
                             ),
                           }))
                         }
@@ -956,8 +956,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            projects: data.projects.map((p) =>
-                              p.id === project.id ? { ...p, link: e.target.value } : p,
+                            projects: data.projects.map((item) =>
+                              item.id === project.id ? { ...item, link: e.target.value } : item,
                             ),
                           }))
                         }
@@ -973,8 +973,10 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          projects: data.projects.map((p) =>
-                            p.id === project.id ? { ...p, outcomes: e.target.value.split("\n").filter(Boolean) } : p,
+                          projects: data.projects.map((item) =>
+                            item.id === project.id
+                              ? { ...item, outcomes: e.target.value.split("\n").filter(Boolean) }
+                              : item,
                           ),
                         }))
                       }
@@ -1040,8 +1042,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          publications: data.publications.map((p) =>
-                            p.id === pub.id ? { ...p, title: e.target.value } : p,
+                          publications: data.publications.map((item) =>
+                            item.id === pub.id ? { ...item, title: e.target.value } : item,
                           ),
                         }))
                       }
@@ -1058,8 +1060,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            publications: data.publications.map((p) =>
-                              p.id === pub.id ? { ...p, date: e.target.value } : p,
+                            publications: data.publications.map((item) =>
+                              item.id === pub.id ? { ...item, date: e.target.value } : item,
                             ),
                           }))
                         }
@@ -1072,8 +1074,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            publications: data.publications.map((p) =>
-                              p.id === pub.id ? { ...p, journal: e.target.value } : p,
+                            publications: data.publications.map((item) =>
+                              item.id === pub.id ? { ...item, journal: e.target.value } : item,
                             ),
                           }))
                         }
@@ -1089,8 +1091,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          publications: data.publications.map((p) =>
-                            p.id === pub.id ? { ...p, description: e.target.value } : p,
+                          publications: data.publications.map((item) =>
+                            item.id === pub.id ? { ...item, description: e.target.value } : item,
                           ),
                         }))
                       }
@@ -1195,8 +1197,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            volunteer_experience: data.volunteer_experience.map((v) =>
-                              v.id === vol.id ? { ...v, organization: e.target.value } : v,
+                            volunteer_experience: data.volunteer_experience.map((item) =>
+                              item.id === vol.id ? { ...item, organization: e.target.value } : item,
                             ),
                           }))
                         }
@@ -1210,8 +1212,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            volunteer_experience: data.volunteer_experience.map((v) =>
-                              v.id === vol.id ? { ...v, role: e.target.value } : v,
+                            volunteer_experience: data.volunteer_experience.map((item) =>
+                              item.id === vol.id ? { ...item, role: e.target.value } : item,
                             ),
                           }))
                         }
@@ -1227,8 +1229,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          volunteer_experience: data.volunteer_experience.map((v) =>
-                            v.id === vol.id ? { ...v, date: e.target.value } : v,
+                          volunteer_experience: data.volunteer_experience.map((item) =>
+                            item.id === vol.id ? { ...item, date: e.target.value } : item,
                           ),
                         }))
                       }
@@ -1243,8 +1245,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          volunteer_experience: data.volunteer_experience.map((v) =>
-                            v.id === vol.id ? { ...v, description: e.target.value } : v,
+                          volunteer_experience: data.volunteer_experience.map((item) =>
+                            item.id === vol.id ? { ...item, description: e.target.value } : item,
                           ),
                         }))
                       }
@@ -1308,8 +1310,8 @@ export default function CVPage() {
                       onChange={(e) =>
                         updateCVData((data) => ({
                           ...data,
-                          references: data.references.map((r) =>
-                            r.id === ref.id ? { ...r, name: e.target.value } : r,
+                          references: data.references.map((item) =>
+                            item.id === ref.id ? { ...item, name: e.target.value } : item,
                           ),
                         }))
                       }
@@ -1325,8 +1327,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            references: data.references.map((r) =>
-                              r.id === ref.id ? { ...r, position: e.target.value } : r,
+                            references: data.references.map((item) =>
+                              item.id === ref.id ? { ...item, position: e.target.value } : item,
                             ),
                           }))
                         }
@@ -1340,8 +1342,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            references: data.references.map((r) =>
-                              r.id === ref.id ? { ...r, company: e.target.value } : r,
+                            references: data.references.map((item) =>
+                              item.id === ref.id ? { ...item, company: e.target.value } : item,
                             ),
                           }))
                         }
@@ -1359,8 +1361,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            references: data.references.map((r) =>
-                              r.id === ref.id ? { ...r, email: e.target.value } : r,
+                            references: data.references.map((item) =>
+                              item.id === ref.id ? { ...item, email: e.target.value } : item,
                             ),
                           }))
                         }
@@ -1374,8 +1376,8 @@ export default function CVPage() {
                         onChange={(e) =>
                           updateCVData((data) => ({
                             ...data,
-                            references: data.references.map((r) =>
-                              r.id === ref.id ? { ...r, phone: e.target.value } : r,
+                            references: data.references.map((item) =>
+                              item.id === ref.id ? { ...item, phone: e.target.value } : item,
                             ),
                           }))
                         }

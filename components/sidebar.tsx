@@ -52,16 +52,6 @@ export function Sidebar() {
         {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </Button>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 right-4 z-50 hidden lg:flex bg-background/80 backdrop-blur-sm hover:bg-background/90 transition-colors"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        title={isCollapsed ? "Expand" : "Collapse"}
-      >
-        <ChevronLeft className={cn("w-5 h-5 transition-transform duration-300", isCollapsed ? "rotate-180" : "")} />
-      </Button>
-
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
       )}
@@ -74,14 +64,13 @@ export function Sidebar() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
-        {/* Header - Fixed at top */}
         <div
           className={cn(
-            "flex-shrink-0 border-b transition-all duration-300",
+            "flex-shrink-0 border-b transition-all duration-300 flex items-center justify-between",
             isCollapsed ? "p-3" : "p-4 pt-16 lg:pt-4",
           )}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
             <div
               className={cn(
                 "rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 transition-all duration-300",
@@ -99,6 +88,16 @@ export function Sidebar() {
             </div>
             {!isCollapsed && <span className="font-bold text-base truncate">Defonic Tools</span>}
           </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden lg:flex flex-shrink-0 ml-2 hover:bg-secondary/60 transition-colors"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            title={isCollapsed ? "Expand" : "Collapse"}
+          >
+            <ChevronLeft className={cn("w-5 h-5 transition-transform duration-300", isCollapsed ? "rotate-180" : "")} />
+          </Button>
         </div>
 
         <nav className="flex-1 px-2 space-y-4 overflow-y-auto min-h-0 py-4">
@@ -149,7 +148,7 @@ export function Sidebar() {
                     href={project.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200",
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group",
                       isActive
                         ? "bg-primary text-primary-foreground shadow-md"
                         : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
