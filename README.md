@@ -34,7 +34,7 @@ Agar siz foydalanuvchi bilan ishlayotgan bo‘lsangiz, kerak bo‘lsa chown bila
 
 2.1 Paketlarni o‘rnatish
 ```bash
-npm install
+npm install  --force or --legacy-peer-deps
 # yoki agar pnpm ishlatilgan bo‘lsa (pnpm-lock mavjud) 
 # sudo npm install -g pnpm
 # pnpm install
